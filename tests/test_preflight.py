@@ -511,7 +511,9 @@ class PreflightTests(unittest.TestCase):
         with zipfile.ZipFile(self.path, 'w') as z:
             with z.open('synthetic', 'w', force_zip64=True) as stream:
                 stream.write(b'synthetic')
-        self.assertIn('unsupported_zip64_or_version', self.codes(inspect_docx(self.path)))
+        report = inspect_docx(self.path)
+        self.assertEqual(report['status'], 'error')
+        self.assertTrue({'unsupported_zip64', 'unsupported_zip64_or_version'} & self.codes(report))
 
     def test_zip64_locator_and_extra_fields(self):
         package(self.path)
